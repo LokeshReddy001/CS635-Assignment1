@@ -365,7 +365,11 @@ def train_QueryLH_cls(dataset_path):
                 print(f"Validation Loss at step {i}: {dev_loss}")
                 wandb.log({'dev_loss': dev_loss})
                 model.train()
-
+        
+        model_save_path = os.path.join(save_dir, f"{task_name}_epoch{epoch+1}.pth")
+        torch.save(model.state_dict(), model_save_path)
+        print(f"Model saved to {model_save_path}")
+        
 def train(task_name, dataset_path):
     if task_name == 'DocLH_Logits':
         train_DocLH_logits(dataset_path)
