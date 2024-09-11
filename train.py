@@ -37,14 +37,15 @@ def train_DocLH_logits(dataset_path):
     model = BertLogitScorer().to('cuda')
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-    batch_size = 32
+    batch_size = 8
     num_epochs = 2
     num_training_steps = (len(train_dataset)) * 2
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5, weight_decay=0.01)
-    scheduler = get_linear_schedule_with_warmup(optimizer, 
-                                                num_warmup_steps=5000, 
+    optimizer = torch.optim.AdamW(model.parameters(), lr=3e-5, weight_decay=0.01)
+    scheduler = get_cosine_schedule_with_warmup(optimizer, 
+                                            num_warmup_steps=0,
                                             num_training_steps=num_training_steps)
+
     criterion = ContrastiveLoss()
 
     save_dir = "./model_checkpoints"
@@ -75,7 +76,7 @@ def train_DocLH_logits(dataset_path):
 
             batch_loss = batch_loss / len(batch_samples)
             batch_loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.5)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
 
             optimizer.step()
             scheduler.step() 
@@ -125,14 +126,15 @@ def train_QueryLH_logits(dataset_path):
     model = BertLogitScorer().to('cuda')
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-    batch_size = 32
-    num_epochs = 2
+    batch_size = 8
+    num_epochs = 1
     num_training_steps = (len(train_dataset)) * 2
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5, weight_decay=0.01)
-    scheduler = get_linear_schedule_with_warmup(optimizer, 
-                                                num_warmup_steps=5000, 
+    optimizer = torch.optim.AdamW(model.parameters(), lr=3e-5, weight_decay=0.01)
+    scheduler = get_cosine_schedule_with_warmup(optimizer, 
+                                            num_warmup_steps=0,
                                             num_training_steps=num_training_steps)
+
     criterion = ContrastiveLoss()
 
     save_dir = "./model_checkpoints"
